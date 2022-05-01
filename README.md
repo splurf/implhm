@@ -7,43 +7,41 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-const DEFAULT_CAPACITY: u64 = 17;
-
 fn hash<T: Hash>(key: T) -> u64 {
     let mut state = DefaultHasher::new();
     key.hash(&mut state);
-    state.finish() % DEFAULT_CAPACITY
+    state.finish() % 17
 }
 
 fn main() {
     /*
-        When passed through the `hash` function, `orange` and `blueberry` both equal `8`
+        When passed through the `hash` function,
+        `orange` and `blueberry` both equal `8`
     */
     let a = hash("orange");
     let b = hash("blueberry");
-
     /*
-        If *collision* isn't handled, then the *value* ("orange") at the location of
-        the *key* (`8`) would be replaced with the *value* ("blueberry")
+        If *collision* isn't handled, then the *value*
+        ("orange") at the location of the *key* (`8`)
+        would be replaced with the *value* ("blueberry")
     */
     assert_eq!(a, b)
 }
 ```
 Here, collision is completely handled due to *separate chaining*/*open addressing*:
 ```rust
-use implhm::SCHashMap;
+use implhm::{Map, SCHashMap};
 
 fn main() {
-    let mut map = SCHashMap::new();
+    let mut map = SCHashMap::default();
 
     map.insert("orange", "ORANGE");
     map.insert("blueberry", "BLUEBERRY");
-
     /*
-        In the case of *separate chaining*, collision is handled by placing any key-pairs
-        that calculate to the same hash into an ordered list at that index.
+        In the case of *separate chaining*, collision is
+        handled by placing any key-pairs that calculate to
+        the same hash into an ordered list at that index.
     */
-
     assert_eq!(map.get("orange"), Some("ORANGE"));
     assert_eq!(map.get("blueberry"), Some("BLUEBERRY"));
 }

@@ -4,6 +4,7 @@ mod tools;
 #[cfg(feature = "enabled")]
 pub use tools::*;
 
+/** Default capacity for every container */
 pub const DEFAULT_CAPACITY: usize = 17;
 
 #[cfg(test)]
