@@ -1,6 +1,6 @@
 [package]
 name = "implhm"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2021"
 
 license = "MIT"
@@ -13,10 +13,9 @@ categories = ["data-structures"]
 
 [features]
 default = ["separate-chaining"]
-enabled = []
 
 separate-chaining = ["enabled"]
-open-addressing = []
+open-addressing = ["enabled"]
 
 double-hashing = ["open-addressing"]
 linear-probing = ["open-addressing"]
@@ -24,6 +23,8 @@ quadratic-probing = ["open-addressing"]
 
 separate-chaining-test = ["separate-chaining", "test"]
 open-addressing-test = ["open-addressing", "test"]
+
+enabled = []
 test = []
 
 [dependencies]

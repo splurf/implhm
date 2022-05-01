@@ -3,6 +3,7 @@ use {
     std::hash::Hash,
 };
 
+/** HashMap implementation handling *collision* by *linear probing* */
 #[derive(Debug)]
 pub struct LPHashMap<K, V> {
     _data: Vec<Entry<K, V>>,

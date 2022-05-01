@@ -3,6 +3,7 @@ use {
     std::hash::Hash,
 };
 
+/** HashMap implementation handling *collision* by *double hashing* */
 #[derive(Debug)]
 pub struct DHHashMap<K, V> {
     _data: Vec<Entry<K, V>>,

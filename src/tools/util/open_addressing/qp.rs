@@ -3,6 +3,7 @@ use {
     std::hash::Hash,
 };
 
+/** HashMap implementation handling *collision* by *quadratic probing* */
 #[derive(Debug)]
 pub struct QPHashMap<K, V> {
     _data: Vec<Entry<K, V>>,

@@ -9,6 +9,7 @@ use {
 
 const MAX_LOAD_FACTOR: f32 = 0.75;
 
+/** HashMap implementation handling *collision* by *separate chaining* */
 #[derive(Debug)]
 pub struct SCHashMap<K, V> {
     data: Vec<OrderedMap<K, V>>,
