@@ -1,5 +1,35 @@
 # implhm
 
+##### Simplified library of *collision-handling* **HashMaps**
+
+## Getting Started
+Place *implhm* in your `Cargo.toml`:
+```toml
+[dependencies]
+implhm = "1.0.0"
+```
+
+## Features
+There are several different methods for handling collision. *implhm* provides the most basic implementations. The following features are available:
+
++ **separate-chaining** (*default*)
++ **open-addressing**
+    + *double-hashing*
+    + *linear-probing*
+    + *quadratic-probing*
++ **separate-chaining-test**
++ **open-addressing-test**
+    + *double-hashing-test*
+    + *linear-probing-test*
+    + *quadratic-probing-test*
+
+Here is an example of using a single feature:
+```toml
+[dependencies]
+implhm = { version = "1.0.0", default-features = false, features = ["quadratic-probing"] }
+```
+
+## Usage
 A basic example of hash collision using two strings:
 ```rust
 use std::{
@@ -46,16 +76,3 @@ fn main() {
     assert_eq!(map.get("blueberry"), Some("BLUEBERRY"));
 }
 ```
-## Optional Features
-There are several different methods for handling collision. *implhm* provides the most basic implementations. The following features are available:
-
-+ **separate-chaining** (*default*)
-+ **open-addressing**
-    + *double-hashing*
-    + *linear-probing*
-    + *quadratic-probing*
-+ **separate-chaining-test**
-+ **open-addressing-test**
-    + *double-hashing-test*
-    + *linear-probing-test*
-    + *quadratic-probing-test*
