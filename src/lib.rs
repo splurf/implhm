@@ -7,6 +7,29 @@ pub use tools::*;
 /** Default capacity for every container */
 pub const DEFAULT_CAPACITY: usize = 17;
 
+/** Create a new table by filling a vector with the specified `capacity` with a clonable value */
+fn create_table<T: Clone>(capacity: usize, f: T) -> Vec<T> {
+    (0..capacity).map(|_| f.clone()).collect()
+}
+
+/** Calculate the next prime integer */
+pub fn next_prime(mut n: usize) -> usize {
+    loop {
+        n += 1;
+
+        let mut i = 0;
+
+        for j in 1..=n {
+            if n % j == 0 {
+                i += 1;
+            }
+        }
+        if i == 2 {
+            break n;
+        }
+    }
+}
+
 #[cfg(test)]
 #[cfg(feature = "test")]
 mod tests {

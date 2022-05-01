@@ -1,6 +1,6 @@
 use {
     super::OrderedMap,
-    crate::{Entry, Map, DEFAULT_CAPACITY},
+    crate::{create_table, next_prime, Entry, Map, DEFAULT_CAPACITY},
     std::{
         collections::hash_map::DefaultHasher,
         hash::{Hash, Hasher},
@@ -62,16 +62,19 @@ impl<K: Clone + Hash + Ord, V: Clone> Map<K, V> for SCHashMap<K, V> {
 }
 
 impl<K: Clone + Hash + Ord, V: Clone> SCHashMap<K, V> {
+    /** Create a table of `OrderedMap` with the specified `capacity` */
     fn create_table(capacity: usize) -> Vec<OrderedMap<K, V>> {
-        (0..capacity).map(|_| OrderedMap::new(capacity)).collect()
+        create_table(capacity, OrderedMap::new(capacity))
     }
 
+    /** Determine if the current load factor (clf) has reached the maximum by calculating the clf by dividing the current size by the aggregate capacity */
     fn loaded(&self) -> bool {
         (self.len() as f32 / self.capacity.pow(2) as f32) >= MAX_LOAD_FACTOR
     }
 
+    /** Set the capacity to the next prime integer after double the current capacity then rehash the original data into a new table */
     fn grow(&mut self) {
-        self.capacity *= 2;
+        self.capacity = next_prime(self.capacity * 2);
 
         let buffer = self.entries();
 
@@ -82,6 +85,7 @@ impl<K: Clone + Hash + Ord, V: Clone> SCHashMap<K, V> {
         })
     }
 
+    /** Calculate a *hash* of the given `key` by using the builtin `DefaultHasher` then modulate the resulting hash by the current capacity to get the *location* of the given `key` */
     fn hash(&self, key: K) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash(&mut hasher);
@@ -101,10 +105,6 @@ impl<K: Clone + Hash + Ord, V: Clone> From<Vec<(K, V)>> for SCHashMap<K, V> {
 
 impl<K: Clone + Hash + Ord, V: Clone> Default for SCHashMap<K, V> {
     fn default() -> Self {
-        let capacity = DEFAULT_CAPACITY;
-        Self {
-            data: Self::create_table(capacity),
-            capacity,
-        }
+        Self::new(DEFAULT_CAPACITY)
     }
 }
