@@ -1,0 +1,29 @@
+[package]
+name = "implhm"
+version = "0.1.0"
+edition = "2021"
+
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/splurf/implhm"
+authors = ["Evan Schwartzentruber <evandotschwartzentruber@gmail.com>"]
+description = "Simplified library of collision-handling HashMaps"
+keywords = ["hashmap", "hash", "map", "collision"]
+categories = ["data-structures"]
+
+[features]
+default = ["separate-chaining"]
+enabled = []
+
+separate-chaining = ["enabled"]
+open-addressing = []
+
+double-hashing = ["open-addressing"]
+linear-probing = ["open-addressing"]
+quadratic-probing = ["open-addressing"]
+
+separate-chaining-test = ["separate-chaining", "test"]
+open-addressing-test = ["open-addressing", "test"]
+test = []
+
+[dependencies]
