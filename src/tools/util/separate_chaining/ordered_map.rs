@@ -13,7 +13,7 @@ impl<K: Clone + Ord, V: Clone> Map<K, V> for OrderedMap<K, V> {
     }
 
     fn get(&self, key: K) -> Option<V> {
-        if let Ok(i) = self.find(key) {
+        if let Ok(i) = self.find(&key) {
             Some(self.0[i].value())
         } else {
             None
@@ -21,7 +21,7 @@ impl<K: Clone + Ord, V: Clone> Map<K, V> for OrderedMap<K, V> {
     }
 
     fn insert(&mut self, key: K, value: V) -> Option<V> {
-        match self.find(key.clone()) {
+        match self.find(&key) {
             Ok(i) => {
                 let temp = self.0[i].value();
                 self.0[i].set_value(value);
@@ -35,7 +35,7 @@ impl<K: Clone + Ord, V: Clone> Map<K, V> for OrderedMap<K, V> {
     }
 
     fn remove(&mut self, key: K) -> Option<V> {
-        Some(self.0.remove(self.find(key).ok()?).value())
+        Some(self.0.remove(self.find(&key).ok()?).value())
     }
 
     fn entries(&self) -> Vec<Entry<K, V>> {
@@ -43,17 +43,17 @@ impl<K: Clone + Ord, V: Clone> Map<K, V> for OrderedMap<K, V> {
     }
 
     fn keys(&self) -> Vec<K> {
-        self.0.iter().map(|e| e.key()).collect()
+        self.0.iter().map(Entry::key).collect::<Vec<K>>()
     }
 
     fn values(&self) -> Vec<V> {
-        self.0.iter().map(|e| e.value()).collect()
+        self.0.iter().map(Entry::value).collect::<Vec<V>>()
     }
 }
 
-impl<K: Clone + Ord, V: Clone> OrderedMap<K, V> {
-    fn find(&self, key: K) -> Result<usize, usize> {
-        self.0.binary_search_by_key(&key, |e| e.key())
+impl<K: Ord + Clone, V: Clone> OrderedMap<K, V> {
+    fn find(&self, key: &K) -> Result<usize, usize> {
+        self.0.binary_search_by_key(key, Entry::key)
     }
 }
 

@@ -10,8 +10,8 @@ pub const DEFAULT_CAPACITY: usize = 17;
 
 #[cfg(feature = "enabled")]
 /** Create a new table by filling a vector with the specified `capacity` with a clonable value */
-fn create_table<T: Clone>(capacity: usize, f: T) -> Vec<T> {
-    (0..capacity).map(|_| f.clone()).collect()
+fn create_table<T: Clone>(capacity: usize, element: T) -> Vec<T> {
+    (0..capacity).map(|_| element.clone()).collect()
 }
 
 #[cfg(feature = "enabled")]

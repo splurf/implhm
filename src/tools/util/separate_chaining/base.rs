@@ -31,11 +31,11 @@ impl<K: Clone + Hash + Ord, V: Clone> Map<K, V> for SCHashMap<K, V> {
     }
 
     fn get(&self, key: K) -> Option<V> {
-        Some(self.data[self.hash(key.clone())].get(key)?)
+        Some(self.data[self.hash(&key)].get(key)?)
     }
 
     fn insert(&mut self, key: K, value: V) -> Option<V> {
-        let i = self.hash(key.clone());
+        let i = self.hash(&key);
         let value = self.data[i].insert(key, value);
 
         if self.loaded() {
@@ -45,20 +45,28 @@ impl<K: Clone + Hash + Ord, V: Clone> Map<K, V> for SCHashMap<K, V> {
     }
 
     fn remove(&mut self, key: K) -> Option<V> {
-        let i = self.hash(key.clone());
+        let i = self.hash(&key);
         self.data[i].remove(key)
     }
 
     fn entries(&self) -> Vec<Entry<K, V>> {
-        self.data.iter().map(|o| o.entries()).flatten().collect()
+        self.data
+            .iter()
+            .map(OrderedMap::entries)
+            .flatten()
+            .collect::<Vec<Entry<K, V>>>()
     }
 
     fn keys(&self) -> Vec<K> {
-        self.data.iter().map(|o| o.keys()).flatten().collect()
+        self.data
+            .iter()
+            .map(OrderedMap::keys)
+            .flatten()
+            .collect::<Vec<K>>()
     }
 
     fn values(&self) -> Vec<V> {
-        self.data.iter().map(|o| o.values()).flatten().collect()
+        self.data.iter().map(OrderedMap::values).flatten().collect()
     }
 }
 
@@ -87,7 +95,7 @@ impl<K: Clone + Hash + Ord, V: Clone> SCHashMap<K, V> {
     }
 
     /** Calculate a *hash* of the given `key` by using the builtin `DefaultHasher` then modulate the resulting hash by the current capacity to get the *location* of the given `key` */
-    fn hash(&self, key: K) -> usize {
+    fn hash(&self, key: &K) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash(&mut hasher);
         (hasher.finish() % self.capacity as u64) as usize
@@ -96,7 +104,7 @@ impl<K: Clone + Hash + Ord, V: Clone> SCHashMap<K, V> {
 
 impl<K: Clone + Hash + Ord, V: Clone> From<Vec<(K, V)>> for SCHashMap<K, V> {
     fn from(kv: Vec<(K, V)>) -> Self {
-        let mut map = Self::new(DEFAULT_CAPACITY);
+        let mut map = Self::default();
         for (key, value) in kv.into_iter() {
             map.insert(key, value);
         }
