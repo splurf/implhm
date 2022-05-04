@@ -6,7 +6,7 @@
 Place *implhm* in your `Cargo.toml`:
 ```toml
 [dependencies]
-implhm = "1.0.4"
+implhm = "1.0.5"
 ```
 
 ## Features
@@ -26,7 +26,7 @@ There are several different methods for handling collision. *implhm* provides th
 Here is an example of using a single feature:
 ```toml
 [dependencies]
-implhm = { version = "1.0.4", default-features = false, features = ["quadratic-probing"] }
+implhm = { version = "1.0.5", default-features = false, features = ["quadratic-probing"] }
 ```
 
 ## Usage
@@ -58,9 +58,9 @@ fn main() {
     assert_eq!(a, b)
 }
 ```
-Here, collision is completely handled due to *separate chaining*/*open addressing*:
+Here, collision is completely handled by *separate chaining*:
 ```rust
-use implhm::{Map, SCHashMap};
+use implhm::{Map, MapMut, SCHashMap};
 
 fn main() {
     let mut map = SCHashMap::default();
@@ -72,7 +72,7 @@ fn main() {
         handled by placing any key-pairs that calculate to
         the same hash into an ordered list at that index.
     */
-    assert_eq!(map.get("orange"), Some("ORANGE"));
-    assert_eq!(map.get("blueberry"), Some("BLUEBERRY"));
+    assert_eq!(map.get("orange"), Some(&"ORANGE"));
+    assert_eq!(map.get("blueberry"), Some(&"BLUEBERRY"));
 }
 ```

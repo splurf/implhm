@@ -1,64 +1,75 @@
-use crate::{Entry, Map, DEFAULT_CAPACITY};
+use {
+    super::{Entry, EntryMut, EntrySet, RawEntry},
+    crate::{Map, MapMut, MapUtil},
+    std::{mem::replace, slice::Iter, vec::IntoIter},
+};
 
-#[derive(Clone, Debug)]
-pub struct OrderedMap<K, V>(Vec<Entry<K, V>>);
+#[derive(Debug)]
+pub struct OrderedMap<K, V>(Vec<RawEntry<K, V>>);
 
-impl<K: Clone + Ord, V: Clone> Map<K, V> for OrderedMap<K, V> {
-    fn new(capacity: usize) -> Self {
+impl<K, V> OrderedMap<K, V> {
+    pub fn new(capacity: usize) -> Self {
         Self(Vec::with_capacity(capacity))
     }
+}
 
+impl<K: Ord, V> OrderedMap<K, V> {
+    fn locate(&self, key: &K) -> Result<usize, usize> {
+        self.0.binary_search_by_key(&key, |f| f.key())
+    }
+}
+
+impl<K, V> MapUtil<K, V> for OrderedMap<K, V> {
     fn len(&self) -> usize {
         self.0.len()
     }
 
-    fn get(&self, key: K) -> Option<V> {
-        if let Ok(i) = self.find(&key) {
+    fn keys(&self) -> Iter<K> {
+        todo!()
+    }
+
+    fn values(&self) -> Iter<V> {
+        todo!()
+    }
+}
+
+impl<K: Ord, V> Map<K, V> for OrderedMap<K, V> {
+    fn get(&self, key: K) -> Option<&V> {
+        if let Ok(i) = self.locate(&key) {
             Some(self.0[i].value())
         } else {
             None
         }
     }
+}
 
+impl<K: Ord, V> MapMut<K, V> for OrderedMap<K, V> {
     fn insert(&mut self, key: K, value: V) -> Option<V> {
-        match self.find(&key) {
-            Ok(i) => {
-                let temp = self.0[i].value();
-                self.0[i].set_value(value);
-                Some(temp)
-            }
+        match self.locate(&key) {
+            Ok(i) => Some(replace(self.0[i].value_mut(), value)),
             Err(i) => {
-                self.0.insert(i, Entry::new(key, value));
+                self.0.insert(i, RawEntry::new(key, value));
                 None
             }
         }
     }
 
     fn remove(&mut self, key: K) -> Option<V> {
-        Some(self.0.remove(self.find(&key).ok()?).value())
-    }
-
-    fn entries(&self) -> Vec<Entry<K, V>> {
-        self.0.clone()
-    }
-
-    fn keys(&self) -> Vec<K> {
-        self.0.iter().map(Entry::key).collect::<Vec<K>>()
-    }
-
-    fn values(&self) -> Vec<V> {
-        self.0.iter().map(Entry::value).collect::<Vec<V>>()
+        let i = self.locate(&key).ok()?;
+        Some(self.0.remove(i).into_value())
     }
 }
 
-impl<K: Ord + Clone, V: Clone> OrderedMap<K, V> {
-    fn find(&self, key: &K) -> Result<usize, usize> {
-        self.0.binary_search_by_key(key, Entry::key)
-    }
-}
+impl<K, V> IntoIterator for OrderedMap<K, V> {
+    type Item = (K, V);
 
-impl<K: Clone + Ord, V: Clone> Default for OrderedMap<K, V> {
-    fn default() -> Self {
-        Self::new(DEFAULT_CAPACITY)
+    type IntoIter = IntoIter<(K, V)>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0
+            .into_iter()
+            .map(EntrySet::into_set)
+            .collect::<Vec<(K, V)>>()
+            .into_iter()
     }
 }

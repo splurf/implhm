@@ -1,6 +1,6 @@
 [package]
 name = "implhm"
-version = "1.0.4"
+version = "1.0.5"
 edition = "2021"
 
 license = "MIT"
@@ -20,6 +20,10 @@ open-addressing = ["enabled"]
 double-hashing = ["open-addressing"]
 linear-probing = ["open-addressing"]
 quadratic-probing = ["open-addressing"]
+
+double-hashing-test = ["double-hashing", "open-addressing-test"]
+linear-probing-test = ["linear-probing", "open-addressing-test"]
+quadratic-probing-test = ["quadratic-probing", "open-addressing-test"]
 
 separate-chaining-test = ["separate-chaining", "test"]
 open-addressing-test = ["open-addressing", "test"]
