@@ -1,16 +1,22 @@
+use crate::map::MapSize;
+
 use {
-    super::{create_table, next_prime, OrderedMap, DEFAULT_CAPACITY},
-    crate::{Map, MapMut, MapUtil},
+    crate::{
+        iter::{IntoKeys, IntoValues, Iter, Keys, Values},
+        map::{IntoMapUtil, Map, MapIter, MapMut, MapUtil},
+        tools::misc::{
+            base::OrderedMap,
+            constant::{DEFAULT_CAPACITY, MAX_LOAD_FACTOR},
+            func::{create_table, next_prime},
+        },
+    },
     std::{
         collections::hash_map::DefaultHasher,
         hash::{Hash, Hasher},
         mem::replace,
-        slice::Iter,
         vec::IntoIter,
     },
 };
-
-const MAX_LOAD_FACTOR: f32 = 0.75;
 
 /** HashMap implementation handling *collision* by *separate chaining* */
 #[derive(Debug)]
@@ -18,7 +24,7 @@ pub struct SCHashMap<K, V>(Vec<OrderedMap<K, V>>);
 
 impl<K, V> SCHashMap<K, V> {
     pub fn new(capacity: usize) -> Self {
-        Self(create_table(capacity, OrderedMap::new))
+        Self(create_table(capacity, || OrderedMap::new(capacity)))
     }
 
     /** Determine if the current load factor (clf) has reached the maximum by calculating the clf by dividing the current size by the aggregate capacity */
@@ -44,7 +50,7 @@ impl<K: Hash + Ord, V> SCHashMap<K, V> {
 
         let old = replace(
             &mut self.0,
-            create_table(capacity, |_| OrderedMap::new(bucket_capacity)),
+            create_table(capacity, || OrderedMap::new(bucket_capacity)),
         );
 
         for (k, v) in old.into_iter().flat_map(|o| o.into_iter()) {
@@ -92,19 +98,37 @@ impl<K: Hash + Ord, V> MapMut<K, V> for SCHashMap<K, V> {
     }
 }
 
-impl<K, V> MapUtil<K, V> for SCHashMap<K, V> {
+impl<'a, K, V> MapUtil<'a, K, V> for SCHashMap<K, V> {
+    fn keys(&'a self) -> Keys<'a, K> {
+        (&self.0).into()
+    }
+
+    fn values(&'a self) -> Values<'a, V> {
+        (&self.0).into()
+    }
+}
+
+impl<K, V> IntoMapUtil<K, V> for SCHashMap<K, V> {
+    fn into_keys(self) -> IntoKeys<K> {
+        self.0.into()
+    }
+
+    fn into_values(self) -> IntoValues<V> {
+        self.0.into()
+    }
+}
+
+impl<'a, K, V> MapIter<'a, K, V> for SCHashMap<K, V> {
+    fn iter(&'a self) -> Iter<'a, (K, V)> {
+        (&self.0).into()
+    }
+}
+
+impl<K, V> MapSize for SCHashMap<K, V> {
     fn len(&self) -> usize {
         let mut total = 0;
         self.0.iter().for_each(|o| total += o.len());
         total
-    }
-
-    fn keys(&self) -> Iter<K> {
-        todo!()
-    }
-
-    fn values(&self) -> Iter<V> {
-        todo!()
     }
 }
 

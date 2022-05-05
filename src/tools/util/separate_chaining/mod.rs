@@ -1,9 +1,3 @@
-mod base;
-mod ordered_map;
+mod sc;
 
-use {
-    super::{create_table, entry::*, next_prime, DEFAULT_CAPACITY},
-    ordered_map::OrderedMap,
-};
-
-pub use base::SCHashMap;
+pub use sc::*;
