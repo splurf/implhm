@@ -1,12 +1,10 @@
-use crate::map::MapSize;
-
 use {
     crate::{
-        entry::{Entry, EntryMut, IntoEntry, IntoEntrySet, RawEntry},
-        iter::{IntoKeys, IntoValues, Iter, Keys, Values},
-        map::{IntoMapUtil, Map, MapIter, MapMut, MapUtil},
+        entry::{Entry, EntryMut, IntoEntry, RawEntry},
+        iter::{IntoIter, IntoKeys, IntoValues, Iter, Keys, Values},
+        map::{IntoMapUtil, Map, MapIter, MapMut, MapSize, MapUtil},
     },
-    std::{mem::replace, vec::IntoIter},
+    std::mem::replace,
 };
 
 #[derive(Debug)]
@@ -25,8 +23,8 @@ impl<K: Ord, V> OrderedMap<K, V> {
 }
 
 impl<K: Ord, V> Map<K, V> for OrderedMap<K, V> {
-    fn get(&self, key: K) -> Option<&V> {
-        if let Ok(i) = self.locate(&key) {
+    fn get(&self, key: &K) -> Option<&V> {
+        if let Ok(i) = self.locate(key) {
             Some(self.0[i].value())
         } else {
             None
@@ -45,8 +43,8 @@ impl<K: Ord, V> MapMut<K, V> for OrderedMap<K, V> {
         }
     }
 
-    fn remove(&mut self, key: K) -> Option<V> {
-        let i = self.locate(&key).ok()?;
+    fn remove(&mut self, key: &K) -> Option<V> {
+        let i = self.locate(key).ok()?;
         Some(self.0.remove(i).into_value())
     }
 }
@@ -89,40 +87,6 @@ impl<K, V> IntoIterator for OrderedMap<K, V> {
     type IntoIter = IntoIter<(K, V)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.0
-            .into_iter()
-            .map(IntoEntrySet::into_set)
-            .collect::<Vec<(K, V)>>()
-            .into_iter()
-    }
-}
-
-impl<'a, K, V> From<&'a Vec<OrderedMap<K, V>>> for Keys<'a, K> {
-    fn from(maps: &'a Vec<OrderedMap<K, V>>) -> Self {
-        maps.iter().map(|o| o.keys()).collect()
-    }
-}
-
-impl<'a, K, V> From<&'a Vec<OrderedMap<K, V>>> for Values<'a, V> {
-    fn from(maps: &'a Vec<OrderedMap<K, V>>) -> Self {
-        maps.iter().map(|o| o.values()).collect()
-    }
-}
-
-impl<K, V> From<Vec<OrderedMap<K, V>>> for IntoKeys<K> {
-    fn from(maps: Vec<OrderedMap<K, V>>) -> Self {
-        maps.into_iter().map(|o| o.into_keys()).collect()
-    }
-}
-
-impl<K, V> From<Vec<OrderedMap<K, V>>> for IntoValues<V> {
-    fn from(maps: Vec<OrderedMap<K, V>>) -> Self {
-        maps.into_iter().map(|o| o.into_values()).collect()
-    }
-}
-
-impl<'a, K, V> From<&'a Vec<OrderedMap<K, V>>> for Iter<'a, (K, V)> {
-    fn from(maps: &'a Vec<OrderedMap<K, V>>) -> Self {
-        maps.iter().map(|o| o.iter()).collect()
+        self.0.into()
     }
 }

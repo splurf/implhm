@@ -6,7 +6,7 @@
 Place *implhm* in your `Cargo.toml`:
 ```toml
 [dependencies]
-implhm = "1.0.6"
+implhm = "1.0.7"
 ```
 
 ## Features
@@ -26,7 +26,7 @@ There are several different methods for handling collision. *implhm* provides th
 Here is an example of using a single feature:
 ```toml
 [dependencies]
-implhm = { version = "1.0.6", default-features = false, features = ["quadratic-probing"] }
+implhm = { version = "1.0.7", default-features = false, features = ["quadratic-probing"] }
 ```
 
 ## Usage

@@ -19,14 +19,14 @@ mod tests {
         fn get_test_0() {
             let map: SCHashMap<&str, &str> =
                 vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-            assert_eq!(map.get("69"), Some(&"four-twenty"));
+            assert_eq!(map.get(&"69"), Some(&"four-twenty"));
         }
 
         #[test]
         fn get_test_1() {
             let map: SCHashMap<&str, &str> =
                 vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-            assert_eq!(map.get("0"), None);
+            assert_eq!(map.get(&"0"), None);
         }
 
         #[test]
@@ -38,7 +38,7 @@ mod tests {
                 ("69", "four-twenty"),
             ]
             .into();
-            map.remove("69");
+            map.remove(&"69");
             assert_eq!(map.len(), 2);
         }
 
@@ -63,7 +63,7 @@ mod tests {
                 ("69", "four-twenty"),
             ]
             .into();
-            assert_eq!(map.get("69"), Some(&"four-twenty"));
+            assert_eq!(map.get(&"69"), Some(&"four-twenty"));
         }
 
         #[test]
@@ -75,7 +75,7 @@ mod tests {
                 ("69", "four-twenty"),
             ]
             .into();
-            assert_eq!(map.remove("69"), Some("four-twenty"));
+            assert_eq!(map.remove(&"69"), Some("four-twenty"));
         }
 
         #[test]
@@ -157,14 +157,14 @@ mod tests {
             fn get_test_0() {
                 let map: LPHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
             fn get_test_1() {
                 let map: LPHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("0"), None);
+                assert_eq!(map.get(&"0"), None);
             }
 
             #[test]
@@ -176,7 +176,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                map.remove("69");
+                map.remove(&"69");
                 assert_eq!(map.len(), 2);
             }
 
@@ -201,7 +201,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
@@ -213,7 +213,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.remove("69"), Some("four-twenty"));
+                assert_eq!(map.remove(&"69"), Some("four-twenty"));
             }
 
             #[test]
@@ -293,14 +293,14 @@ mod tests {
             fn get_test_0() {
                 let map: DHHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
             fn get_test_1() {
                 let map: DHHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("0"), None);
+                assert_eq!(map.get(&"0"), None);
             }
 
             #[test]
@@ -312,7 +312,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                map.remove("69");
+                map.remove(&"69");
                 assert_eq!(map.len(), 2);
             }
 
@@ -337,7 +337,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
@@ -349,7 +349,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.remove("69"), Some("four-twenty"));
+                assert_eq!(map.remove(&"69"), Some("four-twenty"));
             }
 
             #[test]
@@ -429,14 +429,14 @@ mod tests {
             fn get_test_0() {
                 let map: QPHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
             fn get_test_1() {
                 let map: QPHashMap<&str, &str> =
                     vec![("4", "four"), ("69", "four-twenty"), ("2", "two")].into();
-                assert_eq!(map.get("0"), None);
+                assert_eq!(map.get(&"0"), None);
             }
 
             #[test]
@@ -448,7 +448,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                map.remove("69");
+                map.remove(&"69");
                 assert_eq!(map.len(), 2);
             }
 
@@ -473,7 +473,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.get("69"), Some(&"four-twenty"));
+                assert_eq!(map.get(&"69"), Some(&"four-twenty"));
             }
 
             #[test]
@@ -485,7 +485,7 @@ mod tests {
                     ("69", "four-twenty"),
                 ]
                 .into();
-                assert_eq!(map.remove("69"), Some("four-twenty"));
+                assert_eq!(map.remove(&"69"), Some("four-twenty"));
             }
 
             #[test]

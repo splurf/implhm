@@ -1,7 +1,7 @@
 use {
     crate::{
         entry::RawEntry,
-        iter::{IntoIter, IntoKeys, IntoValues, Keys, Values},
+        iter::{IntoIter, IntoKeys, IntoValues, Iter, Keys, Values},
         map::{IntoMapUtil, Map, MapIter, MapMut, MapSize, MapUtil},
         tools::misc::{constant::DEFAULT_CAPACITY, func::create_table},
     },
@@ -19,7 +19,7 @@ impl<K, V> DHHashMap<K, V> {
 }
 
 impl<K, V> Map<K, V> for DHHashMap<K, V> {
-    fn get(&self, _key: K) -> Option<&V> {
+    fn get(&self, _key: &K) -> Option<&V> {
         todo!()
     }
 }
@@ -29,7 +29,7 @@ impl<K, V> MapMut<K, V> for DHHashMap<K, V> {
         todo!()
     }
 
-    fn remove(&mut self, _key: K) -> Option<V> {
+    fn remove(&mut self, _key: &K) -> Option<V> {
         todo!()
     }
 }
@@ -65,7 +65,7 @@ impl<K, V> IntoIterator for DHHashMap<K, V> {
 }
 
 impl<'a, K, V> MapIter<'a, K, V> for DHHashMap<K, V> {
-    fn iter(&'a self) -> crate::iter::Iter<'a, (K, V)> {
+    fn iter(&'a self) -> Iter<'a, (K, V)> {
         todo!()
     }
 }

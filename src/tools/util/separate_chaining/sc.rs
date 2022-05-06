@@ -1,9 +1,7 @@
-use crate::map::MapSize;
-
 use {
     crate::{
-        iter::{IntoKeys, IntoValues, Iter, Keys, Values},
-        map::{IntoMapUtil, Map, MapIter, MapMut, MapUtil},
+        iter::{IntoIter, IntoKeys, IntoValues, Iter, Keys, Values},
+        map::{IntoMapUtil, Map, MapIter, MapMut, MapSize, MapUtil},
         tools::misc::{
             base::OrderedMap,
             constant::{DEFAULT_CAPACITY, MAX_LOAD_FACTOR},
@@ -14,7 +12,6 @@ use {
         collections::hash_map::DefaultHasher,
         hash::{Hash, Hasher},
         mem::replace,
-        vec::IntoIter,
     },
 };
 
@@ -76,8 +73,8 @@ impl<K: Hash + Ord, V> From<Vec<(K, V)>> for SCHashMap<K, V> {
 }
 
 impl<K: Hash + Ord, V> Map<K, V> for SCHashMap<K, V> {
-    fn get(&self, key: K) -> Option<&V> {
-        Some(self.0[self.hash(&key)].get(key)?)
+    fn get(&self, key: &K) -> Option<&V> {
+        Some(self.0[self.hash(key)].get(key)?)
     }
 }
 
@@ -92,8 +89,8 @@ impl<K: Hash + Ord, V> MapMut<K, V> for SCHashMap<K, V> {
         value
     }
 
-    fn remove(&mut self, key: K) -> Option<V> {
-        let i = self.hash(&key);
+    fn remove(&mut self, key: &K) -> Option<V> {
+        let i = self.hash(key);
         self.0[i].remove(key)
     }
 }
@@ -137,10 +134,6 @@ impl<K, V> IntoIterator for SCHashMap<K, V> {
     type IntoIter = IntoIter<(K, V)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.0
-            .into_iter()
-            .flat_map(OrderedMap::into_iter)
-            .collect::<Vec<(K, V)>>()
-            .into_iter()
+        self.0.into()
     }
 }
