@@ -7,6 +7,7 @@ use {
     std::collections::VecDeque,
 };
 
+#[derive(Debug)]
 pub struct Iter<'a, T>(VecDeque<&'a T>);
 
 impl<'a, T> From<Vec<&'a T>> for Iter<'a, T> {
@@ -43,6 +44,7 @@ impl<'a, T> Iterator for Iter<'a, T> {
     }
 }
 
+#[derive(Debug)]
 pub struct IntoIter<T>(VecDeque<T>);
 
 impl<T> From<Vec<T>> for IntoIter<T> {
@@ -79,6 +81,7 @@ impl<T> Iterator for IntoIter<T> {
     }
 }
 
+#[derive(Debug)]
 pub struct Keys<'a, T>(Iter<'a, T>);
 
 impl<'a, K, V> From<&'a Vec<RawEntry<K, V>>> for Keys<'a, K> {
@@ -115,6 +118,7 @@ impl<'a, K> Iterator for Keys<'a, K> {
     }
 }
 
+#[derive(Debug)]
 pub struct IntoKeys<T>(IntoIter<T>);
 
 impl<K, V> From<Vec<RawEntry<K, V>>> for IntoKeys<K> {
@@ -157,6 +161,7 @@ impl<K> Iterator for IntoKeys<K> {
     }
 }
 
+#[derive(Debug)]
 pub struct Values<'a, T>(Iter<'a, T>);
 
 impl<'a, K, V> From<&'a Vec<RawEntry<K, V>>> for Values<'a, V> {
@@ -187,6 +192,7 @@ impl<'a, V> Iterator for Values<'a, V> {
     }
 }
 
+#[derive(Debug)]
 pub struct IntoValues<T>(IntoIter<T>);
 
 impl<K, V> From<Vec<RawEntry<K, V>>> for IntoValues<V> {

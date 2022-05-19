@@ -29,4 +29,5 @@ pub trait MapIter<'a, K, V>: IntoIterator {
 
 pub trait MapSize {
     fn len(&self) -> usize;
+    fn capacity(&self) -> usize;
 }

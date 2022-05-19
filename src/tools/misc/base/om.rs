@@ -3,6 +3,7 @@ use {
         entry::{Entry, EntryMut, IntoEntry, RawEntry},
         iter::{IntoIter, IntoKeys, IntoValues, Iter, Keys, Values},
         map::{IntoMapUtil, Map, MapIter, MapMut, MapSize, MapUtil},
+        tools::misc::constant::DEFAULT_CAPACITY,
     },
     std::mem::replace,
 };
@@ -79,6 +80,10 @@ impl<K, V> MapSize for OrderedMap<K, V> {
     fn len(&self) -> usize {
         self.0.len()
     }
+
+    fn capacity(&self) -> usize {
+        self.0.capacity()
+    }
 }
 
 impl<K, V> IntoIterator for OrderedMap<K, V> {
@@ -88,5 +93,11 @@ impl<K, V> IntoIterator for OrderedMap<K, V> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into()
+    }
+}
+
+impl<K, V> Default for OrderedMap<K, V> {
+    fn default() -> Self {
+        Self::new(DEFAULT_CAPACITY)
     }
 }

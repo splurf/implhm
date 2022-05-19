@@ -17,16 +17,24 @@ use {
 
 /** HashMap implementation handling *collision* by *separate chaining* */
 #[derive(Debug)]
-pub struct SCHashMap<K, V>(Vec<OrderedMap<K, V>>);
+pub struct SCHashMap<K, V> {
+    data: Vec<OrderedMap<K, V>>,
+    capacity: usize,
+    len: usize,
+}
 
 impl<K, V> SCHashMap<K, V> {
-    pub fn new(capacity: usize) -> Self {
-        Self(create_table(capacity, || OrderedMap::new(capacity)))
+    fn new(capacity: usize, len: usize) -> Self {
+        Self {
+            data: create_table(capacity, || OrderedMap::new(capacity)),
+            capacity,
+            len,
+        }
     }
 
     /** Determine if the current load factor (clf) has reached the maximum by calculating the clf by dividing the current size by the aggregate capacity */
     fn loaded(&self) -> bool {
-        (self.len() as f32 / self.0.len().pow(2) as f32) >= MAX_LOAD_FACTOR
+        (self.len as f32 / self.capacity as f32) > MAX_LOAD_FACTOR
     }
 }
 
@@ -35,37 +43,44 @@ impl<K: Hash, V> SCHashMap<K, V> {
     fn hash(&self, key: &K) -> usize {
         let mut hasher = DefaultHasher::new();
         key.hash(&mut hasher);
-        (hasher.finish() % self.0.len() as u64) as usize
+        (hasher.finish() % self.capacity as u64) as usize
     }
 }
 
 impl<K: Hash + Ord, V> SCHashMap<K, V> {
     /** Set the capacity to the next prime integer after double the current capacity then rehash the original data into a new table */
     fn rehash(&mut self) {
-        let capacity = next_prime(self.0.capacity() * 2);
-        let bucket_capacity = (capacity as f32 * MAX_LOAD_FACTOR) as usize;
+        //  Initialize the new capacity to the next prime number after double the current capacity
+        self.capacity = next_prime(self.capacity * 2);
 
+        //  Replace the current map with an empty map with the new capacity
         let old = replace(
-            &mut self.0,
-            create_table(capacity, || OrderedMap::new(bucket_capacity)),
+            &mut self.data,
+            create_table(self.capacity, || OrderedMap::default()),
         );
 
-        for (k, v) in old.into_iter().flat_map(|o| o.into_iter()) {
-            self.insert(k, v);
+        //  Perform rehashing
+        for (key, value) in IntoIter::from(old) {
+            self._insert(key, value);
         }
+    }
+
+    fn _insert(&mut self, key: K, value: V) -> Option<V> {
+        let i = self.hash(&key);
+        self.data[i].insert(key, value)
     }
 }
 
 impl<K, V> Default for SCHashMap<K, V> {
     fn default() -> Self {
-        Self::new(DEFAULT_CAPACITY)
+        Self::new(DEFAULT_CAPACITY, 0)
     }
 }
 
-impl<K: Hash + Ord, V> From<Vec<(K, V)>> for SCHashMap<K, V> {
-    fn from(kv: Vec<(K, V)>) -> Self {
+impl<K: Hash + Ord, V, T: Into<Vec<(K, V)>>> From<T> for SCHashMap<K, V> {
+    fn from(v: T) -> Self {
         let mut map = Self::default();
-        for (key, value) in kv.into_iter() {
+        for (key, value) in v.into().into_iter() {
             map.insert(key, value);
         }
         map
@@ -74,14 +89,17 @@ impl<K: Hash + Ord, V> From<Vec<(K, V)>> for SCHashMap<K, V> {
 
 impl<K: Hash + Ord, V> Map<K, V> for SCHashMap<K, V> {
     fn get(&self, key: &K) -> Option<&V> {
-        Some(self.0[self.hash(key)].get(key)?)
+        Some(self.data[self.hash(key)].get(key)?)
     }
 }
 
 impl<K: Hash + Ord, V> MapMut<K, V> for SCHashMap<K, V> {
     fn insert(&mut self, key: K, value: V) -> Option<V> {
-        let i = self.hash(&key);
-        let value = self.0[i].insert(key, value);
+        let value = self._insert(key, value);
+
+        if value.is_none() {
+            self.len += 1
+        }
 
         if self.loaded() {
             self.rehash()
@@ -91,41 +109,47 @@ impl<K: Hash + Ord, V> MapMut<K, V> for SCHashMap<K, V> {
 
     fn remove(&mut self, key: &K) -> Option<V> {
         let i = self.hash(key);
-        self.0[i].remove(key)
+        let value = self.data[i].remove(key);
+        if value.is_some() {
+            self.len -= 1
+        }
+        value
     }
 }
 
 impl<'a, K, V> MapUtil<'a, K, V> for SCHashMap<K, V> {
     fn keys(&'a self) -> Keys<'a, K> {
-        (&self.0).into()
+        (&self.data).into()
     }
 
     fn values(&'a self) -> Values<'a, V> {
-        (&self.0).into()
+        (&self.data).into()
     }
 }
 
 impl<K, V> IntoMapUtil<K, V> for SCHashMap<K, V> {
     fn into_keys(self) -> IntoKeys<K> {
-        self.0.into()
+        self.data.into()
     }
 
     fn into_values(self) -> IntoValues<V> {
-        self.0.into()
+        self.data.into()
     }
 }
 
 impl<'a, K, V> MapIter<'a, K, V> for SCHashMap<K, V> {
     fn iter(&'a self) -> Iter<'a, (K, V)> {
-        (&self.0).into()
+        (&self.data).into()
     }
 }
 
 impl<K, V> MapSize for SCHashMap<K, V> {
     fn len(&self) -> usize {
-        let mut total = 0;
-        self.0.iter().for_each(|o| total += o.len());
-        total
+        self.len
+    }
+
+    fn capacity(&self) -> usize {
+        self.capacity
     }
 }
 
@@ -134,6 +158,6 @@ impl<K, V> IntoIterator for SCHashMap<K, V> {
     type IntoIter = IntoIter<(K, V)>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.0.into()
+        self.data.into()
     }
 }
